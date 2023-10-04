@@ -1,0 +1,7 @@
+npm install --save express mysql dotenv cors
+npm i --save-dev nodemon
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '1234'; 
+npm install dotenv
+npm install express
+npm install cors
+npm install mysql
