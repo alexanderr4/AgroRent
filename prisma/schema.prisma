@@ -53,35 +53,58 @@ model multas {
 }
 
 model reservas {
-  id_reserva         Int                 @id @default(autoincrement())
+  id_reserva         Int                         @id @default(autoincrement())
   id_usuario         Int
   id_maquinaria      Int
-  fecha_hra_inicio   DateTime            @db.DateTime(0)
-  facha_hora_fin     DateTime            @db.DateTime(0)
-  validacion_reserva String              @db.Char(1)
+  fecha_hra_inicio   DateTime                    @db.DateTime(0)
+  facha_hora_fin     DateTime                    @db.DateTime(0)
+  validacion_reserva reservas_validacion_reserva
   alquiler_maquinas  alquiler_maquinas[]
-  maquinarias        maquinarias         @relation(fields: [id_maquinaria], references: [id_maquinaria], onUpdate: Restrict, map: "FK_RESERVAS_IDMAQUINARIA")
-  usuarios           usuarios            @relation(fields: [id_usuario], references: [id_usuario], onUpdate: Restrict, map: "FK_RESERVAS_IDUSUARIO")
+  maquinarias        maquinarias                 @relation(fields: [id_maquinaria], references: [id_maquinaria], onUpdate: Restrict, map: "FK_RESERVAS_IDMAQUINARIA")
+  usuarios           usuarios                    @relation(fields: [id_usuario], references: [id_usuario], onUpdate: Restrict, map: "FK_RESERVAS_IDUSUARIO")
 
   @@index([id_maquinaria], map: "FK_RESERVAS_IDMAQUINARIA")
   @@index([id_usuario], map: "FK_RESERVAS_IDUSUARIO")
 }
 
 model usuarios {
-  id_usuario                Int           @default(autoincrement())
+  id_usuario                Int                     @default(autoincrement())
   credenciales_id_crdencial Int
-  nombre_usuario            String        @db.Char(50)
-  apellido_usuario          String        @db.Char(50)
-  tipo_documento            String        @db.Char(2)
-  documento_usuario         String        @db.Char(25)
+  nombre_usuario            String                  @db.Char(50)
+  apellido_usuario          String                  @db.Char(50)
+  tipo_documento            usuarios_tipo_documento
+  documento_usuario         String                  @db.Char(25)
   numero_celu_usuario       Int
-  correo_usuario            String        @db.Char(60)
-  tipo_usuario              String        @db.Char(1)
+  correo_usuario            String                  @db.Char(60)
+  tipo_usuario              usuarios_tipo_usuario
+  estado_usuario            usuarios_estado_usuario @default(A)
   maquinarias               maquinarias[]
   reservas                  reservas[]
-  credenciales              credenciales  @relation(fields: [credenciales_id_crdencial], references: [id_crdencial], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuarios_credenciales1")
+  credenciales              credenciales            @relation(fields: [credenciales_id_crdencial], references: [id_crdencial], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuarios_credenciales1")
 
   @@unique([id_usuario])
   @@id([id_usuario, credenciales_id_crdencial])
   @@index([credenciales_id_crdencial], map: "fk_usuarios_credenciales1_idx")
+}
+
+enum usuarios_tipo_documento {
+  CC
+  CE
+  PA
+}
+
+enum reservas_validacion_reserva {
+  P
+  R
+  A
+}
+
+enum usuarios_tipo_usuario {
+  A
+  C
+}
+
+enum usuarios_estado_usuario {
+  A
+  I
 }
