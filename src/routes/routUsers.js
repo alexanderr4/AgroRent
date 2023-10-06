@@ -3,6 +3,7 @@ const router = express.Router();
 const users= require('../controllers/users.js');
 
 router.get('/users', users.getUsers)
-        .post('/create', users.createUsers);
-        
+        .post('/create', users.createUsers)
+        .patch('/update', users.pacthUser)
+        .patch('/hideUser', users.updateStatus)
 module.exports = router; 

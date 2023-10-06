@@ -1,3 +1,6 @@
 instalar prisma
 npm install prisma --save-dev
 npx prisma migrate dev
+
+---libreria encriptar contraseña
+npm i bcryptjs -s

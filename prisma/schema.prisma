@@ -21,8 +21,8 @@ model alquiler_maquinas {
 
 model credenciales {
   id_crdencial       Int        @id @default(autoincrement())
-  nombre_usuario     String     @db.Char(30)
-  contrasena_usuario String     @db.Char(20)
+  nombre_usuario     String     @db.Char(30) @unique
+  contrasena_usuario String     @db.Char(150)
   usuarios           usuarios[]
 }
 

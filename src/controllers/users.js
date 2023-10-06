@@ -1,14 +1,16 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const {encrypt, compare} = require('../hendleB/handleBcrypt.js');
 
 const createUsers = async (req, res)=>{
     console.log(req.body);
     let body = req.body;
+    const passwordHash = await encrypt(body.contrasena_usuario);
     try{
         const credencial = await prisma.credenciales.create({
             data:{
                 nombre_usuario:body.nombre_user,
-                contrasena_usuario: body.contrasena_usuario,  
+                contrasena_usuario: passwordHash,  
             },    
         });
         const user =await prisma.usuarios.create({
@@ -38,8 +40,57 @@ const createUsers = async (req, res)=>{
 }
 
 const getUsers = async (req, res)=>{
-    const a = await prisma.credenciales.findMany();
+    const a = await prisma.usuarios.findMany({
+        where:{
+            estado_usuario: 'A',
+        },
+    });
     res.json({a});
 }
 
-module.exports={getUsers, createUsers};
+const pacthUser = async (req, res)=>{
+    let body = req.body;
+    try{
+        const upadateUser = await prisma.usuarios.updateMany({
+            where:{
+                documento_usuario: body.documento,
+            },
+            data:{
+                nombre_usuario: body.nombre_usuario,
+                apellido_usuario: body.apellido_usuario,
+                tipo_documento: body.tipo_documento,
+                documento_usuario: body.documento_usuario,
+                numero_celu_usuario: body.numero_celu_usuario,
+                correo_usuario: body.correo_usuario,
+            },
+        });
+        res.json({ msg: "estudiante actualizado", upadateUser })
+    }catch(error){
+        console.error(error);
+        if (error.code === "P2025") {
+            res.status(404).json({ mensaje: `No se encontró un estudiante con el código ${req.params.codigo}` });
+        } else {
+            res.status(500).json({ mensaje: "Error al actualizar estudiante" });
+        }
+    }   
+}
+
+const updateStatus = async (req, res)=>{
+    let body = req.body;
+    try {
+        const status = await prisma.usuarios.updateMany({
+            where:{documento_usuario: body.documento},
+            data:{estado_usuario:'I'}
+        });
+        res.json({ msg: "usuario eliminado", status })
+    } catch (error) {
+        console.error(error);
+        if (error.code === "P2025") {
+            res.status(404).json({ mensaje: `No se encontró un estudiante con el código ${req.params.codigo}` });
+        } else {
+            res.status(500).json({ mensaje: "Error al actualizar estudiante" });
+        }
+    }
+}
+
+module.exports={getUsers, createUsers, pacthUser, updateStatus};
