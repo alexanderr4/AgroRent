@@ -4,3 +4,5 @@ npx prisma migrate dev
 
 ---libreria encriptar contraseña
 npm i bcryptjs -s
+
+node i nodemailer
