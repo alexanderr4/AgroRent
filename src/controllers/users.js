@@ -12,7 +12,7 @@ const createUsers = async (req, res)=>{
         if(status != 0){     //status != 0
             if(validateDocuemtEmail != null && validateDocuemtEmail.documento_usuario === body.documento_usuario ){
                 res.status(404).json({ mensaje: 'Ya hay alaguien registrado con ese numero de documento' });
-            } else if (validateDocuemtEmail != null && mm.correo_usuario === body.correo_usuario && validateDocuemtEmail != null) {
+            } else if (validateDocuemtEmail != null && validateDocuemtEmail.correo_usuario === body.correo_usuario && validateDocuemtEmail != null) {
                 res.status(404).json({ mensaje: `ya hay alaguien registrado con ese correo` });
             }else{
                 const credencial = await prisma.credenciales.create({
@@ -71,24 +71,23 @@ const getUsers = async (req, res)=>{
 const pacthUser = async (req, res)=>{
     let body = req.body;
     try{
-        const upadateUser = await prisma.usuarios.updateMany({
+        const upadateUser = await prisma.usuarios.update({
             where:{
                 documento_usuario: body.documento,
             },
-            data:{
-                nombre_usuario: body.nombre_usuario,
+            data:{ nombre_usuario: body.nombre_usuario,
                 apellido_usuario: body.apellido_usuario,
                 tipo_documento: body.tipo_documento,
                 documento_usuario: body.documento_usuario,
                 numero_celu_usuario: body.numero_celu_usuario,
-                correo_usuario: body.correo_usuario,
-            },
+                correo_usuario: body.correo_usuario
+            }     
         });
         res.json({ msg: "estudiante actualizado", upadateUser })
     }catch(error){
         console.error(error);
-        if (error.code === "P2025") {
-            res.status(404).json({ mensaje: `No se encontró un estudiante con el código ${req.params.codigo}` });
+        if (error.code === "P2002") {
+            res.status(404).json({ mensaje: `No se encontró un estudiante con el código ${req.body.documento}` });
         } else {
             res.status(500).json({ mensaje: "Error al actualizar estudiante" });
         }

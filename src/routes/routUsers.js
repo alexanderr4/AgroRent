@@ -4,6 +4,6 @@ const users= require('../controllers/users.js');
 
 router.get('/users', users.getUsers)
         .post('/create', users.createUsers)
-        .patch('/update', users.pacthUser)
+        .put('/update', users.pacthUser)
         .patch('/hideUser', users.updateStatus)
 module.exports = router; 
