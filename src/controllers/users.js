@@ -11,9 +11,9 @@ const createUsers = async (req, res)=>{
     try{
         if(status != 0){     //status != 0
             if(validateDocuemtEmail != null && validateDocuemtEmail.documento_usuario === body.documento_usuario ){
-                res.status(404).json({ mensaje: 'ya hay alaguien con ese documento' });
+                res.status(404).json({ mensaje: 'Ya hay alaguien registrado con ese numero de documento' });
             } else if (validateDocuemtEmail != null && mm.correo_usuario === body.correo_usuario && validateDocuemtEmail != null) {
-                res.status(404).json({ mensaje: `ya hay alaguien con ese correo` });
+                res.status(404).json({ mensaje: `ya hay alaguien registrado con ese correo` });
             }else{
                 const credencial = await prisma.credenciales.create({
                     data:{
@@ -33,15 +33,10 @@ const createUsers = async (req, res)=>{
                         tipo_usuario: body.tipo_usuario,
                     },
                 });
-                console.log("credencial   ", credencial)
-                // res.json({ msg: "creado", credencial});
-                res.status(200).json({ mensaje: "usuario creado" });}      
+                res.status(200).json({ mensaje: "usuario creado" })}      
         } else{
-            console.log('si entra')
             status.estado_usuario = 'A'
             res.status(200).json({ mensaje: "usuario creado" });
-            
-            //console.log("credencial")
         } 
     }catch(error){
         console.error(error); 
@@ -51,7 +46,7 @@ const createUsers = async (req, res)=>{
             // if (error.meta.target.includes('documento_usuario')) {
             //     res.status(404).json({ mensaje: 'ya hay alaguien con ese documento ' });  
             if (error.meta.target.includes('nombre_usuario')) {
-                res.status(404).json({ mensaje: 'ya hay alaguien nombre usuario ' });
+                res.status(404).json({ mensaje: 'ya hay alaguien registrado con ese nombre usuario ' });
             }
             // } else if (error.meta.target.includes('correo_usuario')) {
             //     res.status(404).json({ mensaje: `ya hay alaguien co ese correo` });
