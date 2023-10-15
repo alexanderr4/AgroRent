@@ -120,3 +120,7 @@ async function generatecorre(body){
 };
 
 module.exports={getUsers, createUsers, pacthUser, updateStatus};
+
+
+
+

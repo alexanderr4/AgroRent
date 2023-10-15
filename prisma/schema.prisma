@@ -20,7 +20,7 @@ model alquiler_maquinas {
 }
 
 model credenciales {
-  id_crdencial       Int        @id @default(autoincrement())
+  id_crdencial       Int        @id @default(autoincrement()) @unique
   nombre_usuario     String     @db.Char(30) @unique
   contrasena_usuario String     @db.Char(150)
   usuarios           usuarios[]
@@ -69,7 +69,7 @@ model reservas {
 
 model usuarios {
   id_usuario                Int                     @default(autoincrement())
-  credenciales_id_crdencial Int
+  credenciales_id_crdencial Int                     @unique
   nombre_usuario            String                  @db.Char(50)
   apellido_usuario          String                  @db.Char(50)
   tipo_documento            usuarios_tipo_documento
