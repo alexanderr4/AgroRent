@@ -6,3 +6,7 @@ npx prisma migrate dev
 npm i bcryptjs -s
 
 node i nodemailer
+
+acces token
+npm i --save jsonwebtoken nodemailer
+npm install dotenv

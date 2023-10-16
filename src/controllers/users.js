@@ -33,7 +33,8 @@ const createUsers = async (req, res)=>{
                         tipo_usuario: body.tipo_usuario,
                     },
                 });
-                res.status(200).json({ mensaje: "usuario creado" })}      
+                res.status(200).json({ mensaje: "usuario creado" })
+            }      
         } else{
             status.estado_usuario = 'A'
             res.status(200).json({ mensaje: "usuario creado" });
