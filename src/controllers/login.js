@@ -33,13 +33,12 @@ const login = async (req, res) =>{
         });
        
         const checkPassword = await compare(body.contrasena_usuario, credencial.contrasena_usuario);
-        if(checkPassword && user.estado_usuario === 'A'){
-            //res.status(200).json({tipo_usuario: user.tipo_usuario});
-            const accesToken = jwt.sign({tipo_usuario:user.tipo_usuario}, process.env.ACCES_TOKEN,{
+        if(checkPassword && user.estado_usuario === 'A'){  
+            /*const accesToken = jwt.sign({tipo_usuario:user.tipo_usuario}, process.env.ACCES_TOKEN,{
                 expiresIn:'8m'
-            });
-            res.status(200).json(accesToken);
-        
+            });*/
+            //res.status(200).json(accesToken);
+            res.status(200).json({tipo_usuario: user.tipo_usuario});
         }else if(credencial){
             throw new Error("P2002")
         }
