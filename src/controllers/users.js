@@ -60,13 +60,42 @@ const createUsers = async (req, res)=>{
     }
 }
 
-const getUsers = async (req, res)=>{
+/*const getUsers = async (req, res)=>{
     const a = await prisma.usuarios.findMany({
         where:{
             estado_usuario: 'A',
         },
     });
+    const credencial = await prisma.credenciales
     res.json(a);
+}*/
+
+const getUsers = async (req, res)=>{
+    const users = await prisma.usuarios.findMany({
+        include: {
+          credenciales: {
+            select: {
+              nombre_usuario: true // El nombre de usuario de la tabla "credenciales"
+            }
+          }
+        }
+      });
+      const mapUsers = users.map((usuarios) => {
+        return {
+            nombre_user: usuarios.credenciales.nombre_usuario,
+            nombre_usuario : usuarios.nombre_usuario,
+            apellido_usuario: usuarios.apellido_usuario,
+            tipo_documento: usuarios.tipo_documento,
+            documento_usuario: usuarios.documento_usuario,
+            numero_celu_usuario: usuarios.numero_celu_usuario,
+            correo_usuario: usuarios.correo_usuario,
+            tipo_usuario: usuarios.tipo_usuario,
+            estado_usuario: usuarios.estado_usuario
+          /*...usuarios,
+          nombre_usuario: usuarios.credenciales.nombre_usuario*/
+        };
+      });
+    res.status(200).json(mapUsers);
 }
 
 const pacthUser = async (req, res)=>{
