@@ -72,6 +72,9 @@ const createUsers = async (req, res)=>{
 
 const getUsers = async (req, res)=>{
     const users = await prisma.usuarios.findMany({
+        where :{
+            estado_usuario: 'A',
+        },
         include: {
           credenciales: {
             select: {
