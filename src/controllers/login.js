@@ -36,8 +36,8 @@ const login = async (req, res) =>{
         if(checkPassword && user.estado_usuario === 'A'){  
             /*const accesToken = jwt.sign({tipo_usuario:user.tipo_usuario}, process.env.ACCES_TOKEN,{
                 expiresIn:'8m'
-            });*/
-            //res.status(200).json(accesToken);
+            });
+            res.status(200).json(accesToken);*/
             res.status(200).json({tipo_usuario: user.tipo_usuario});
         }else if(credencial){
             throw new Error("P2002")
@@ -88,7 +88,7 @@ const recoverPassword = async(req, res) =>{
         var mailOptions = {
             from : process.env.EMAIL,
             to: user.correo_usuario,
-            subject : 'recuperacion de contraseña',
+            subject : 'Recuperacion de contraseña',
             html: '<p> <b>Tus credenciales son </b> <br> <b>Email: '+user.correo_usuario+'</b> <br> <b> Contraseña: </b> <b><u>'+ password+ '</b> </p>'
         }
         trasporter.sendMail(mailOptions, function(error, info){

@@ -38,7 +38,7 @@ const getMachinery = async (req, res)=>{
         const get = await prisma.maquinarias.findMany();
         res.status(200).json(get);
     } catch (error) {
-        res.status(500).json({mesanje : "error al mostar las maquinaris"}); 
+        res.status(500).json({mesanje : "error al mostar las maquinaria"}); 
     }
 }
 
