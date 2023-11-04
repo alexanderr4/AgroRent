@@ -49,19 +49,24 @@ const getMachinery = async (req, res)=>{
 }
 
 const filterCategory = async (req, res) =>{
-    body = req.query.categoria
+    let body = req.query
+    if(req.query.id){
+        body = { id_maquinaria: parseInt(body.id) }
+    }
     try{
         const category = await prisma.maquinarias.findMany({
-            where:{
-                categoria : body
-            }
+            where: body
         });
         const paths = await prisma.imagenes.findMany();
         const mapMachinery = mapMachineryT(category, paths);
         res.status(200).json(mapMachinery);
     }catch(error){
         console.error(error)
-        res.status(500).json({mesanje : "error al mostar las maquinaria"}); 
+        if(error.message.includes("Argument `id_maquinaria` is missing.")){
+            res.status(404).json({mesanje:"El valor ingresado es incorrecto"})
+        }else{
+            res.status(500).json({mesanje : "error al mostar las maquinaria"});
+        }
     }
 }
 

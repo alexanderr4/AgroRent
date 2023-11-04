@@ -72,35 +72,24 @@ const createUsers = async (req, res)=>{
 }*/
 
 const getUsers = async (req, res)=>{
-    const users = await prisma.usuarios.findMany({
-        where :{
-            estado_usuario: 'A',
-        },
-        include: {
-          credenciales: {
-            select: {
-              nombre_usuario: true // El nombre de usuario de la tabla "credenciales"
+    try{
+        const users = await prisma.usuarios.findMany({
+            where :{
+                estado_usuario: 'A',
+            },
+            include: {
+                credenciales: {
+                    select: {
+                        nombre_usuario: true // El nombre de usuario de la tabla "credenciales"
+                    }
+                }
             }
-          }
-        }
-      });
-      const mapUsers = users.map((usuarios) => {
-        return {
-            nombre_user: usuarios.credenciales.nombre_usuario,
-            nombre_usuario : usuarios.nombre_usuario,
-            apellido_usuario: usuarios.apellido_usuario,
-            tipo_documento: usuarios.tipo_documento,
-            documento_usuario: usuarios.documento_usuario,
-            numero_celu_usuario: usuarios.numero_celu_usuario,
-            correo_usuario: usuarios.correo_usuario,
-            tipo_usuario: usuarios.tipo_usuario,
-            estado_usuario: usuarios.estado_usuario,
-            path : usuarios.imagen
-          /*...usuarios,
-          nombre_usuario: usuarios.credenciales.nombre_usuario*/
-        };
-      });
-    res.status(200).json(mapUsers);
+        });
+        const mapUsers = mapUsersF(users);
+        res.status(200).json(mapUsers);
+    }catch(error){
+        res.status(500).json({mensaje: "Error al obtener los usuarios"});
+    }
 }
 
 const pacthUser = async (req, res)=>{
@@ -149,12 +138,62 @@ const updateStatus = async (req, res)=>{
     }
 }
 
+const filterIdUser = async (req, res) => {
+    let body = req.query.id
+    console.log(body)
+    try{
+        const filterUsers = await prisma.usuarios.findMany({
+            where:{
+                id_usuario : parseInt(body)
+            },
+            include:{
+                credenciales:{
+                    select: {
+                        nombre_usuario: true // El nombre de usuario de la tabla "credenciales"
+                    }
+                }
+            }
+        });
+        console.log(filterUsers)
+        const mapUsers = mapUsersF(filterUsers);
+        res.status(200).json(mapUsers)
+    }catch(error){
+        console.error(error)
+        if(error.message.includes("Argument `id_usuario` is missing.")){
+            res.status(404).json({mesanje:"El valor ingresado es incorrecto"})
+        }else{
+            res.status(500).json({mensaje: "Error al obtener el usuario"});
+        }
+    }
+}
+
 async function generatecorre(body){
     let userame= body.nombre_user.replace(/\s+/g, '.');
 
 };
 
-module.exports={getUsers, createUsers, pacthUser, updateStatus};
+function mapUsersF(users){
+    const mapUsers = users.map((usuarios) => {
+        return {
+            nombre_user: usuarios.credenciales.nombre_usuario,
+            nombre_usuario : usuarios.nombre_usuario,
+            apellido_usuario: usuarios.apellido_usuario,
+            tipo_documento: usuarios.tipo_documento,
+            documento_usuario: usuarios.documento_usuario,
+            numero_celu_usuario: usuarios.numero_celu_usuario,
+            correo_usuario: usuarios.correo_usuario,
+            tipo_usuario: usuarios.tipo_usuario,
+            estado_usuario: usuarios.estado_usuario,
+            path : usuarios.imagen
+          /*...usuarios,
+          nombre_usuario: usuarios.credenciales.nombre_usuario*/
+        };
+    });
+    return mapUsers;
+}
+
+
+module.exports={getUsers, createUsers, pacthUser, updateStatus, filterIdUser};
 
 
 
