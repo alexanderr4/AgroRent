@@ -14,3 +14,4 @@ npm install dotenv
 
 
 "dev": "npx nodemon ."  :  npm run dev
+https://youtu.be/3UftyPnqp1w

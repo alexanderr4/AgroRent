@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const users= require('../controllers/machinery.js');
+const machinery= require('../controllers/machinery.js');
 
-router.post('/create', users.createMachinery)
-        .get('/hideMachinery', users.getMachinery)
+router.post('/create', machinery.createMachinery)
+        .get('/hideMachinery', machinery.getMachinery)
+        .get('/filterCategory', machinery.filterCategory)
 module.exports = router; 

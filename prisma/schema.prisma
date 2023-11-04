@@ -27,15 +27,17 @@ model credenciales {
 }
 
 model maquinarias {
-  id_maquinaria       Int        @id @default(autoincrement())
+  id_maquinaria       Int                         @id @default(autoincrement())
   id_usuario          Int
-  nombre_maquina      String     @db.Char(20)
-  descripcion_maquina String     @db.Char(100)
-  placa_maquina       String?    @db.Char(6)
-  modelo_maquina      String?    @db.Char(50)
-  estado_maquina      String     @db.Char(100)
-  precio_hora         Float      @db.Float
-  usuarios            usuarios   @relation(fields: [id_usuario], references: [id_usuario], onUpdate: Restrict, map: "FK_MAQUINARI_IDUSUARIO")
+  nombre_maquina      String                      @db.Char(20)
+  descripcion_maquina String                      @db.Char(100)
+  categoria           String
+  placa_maquina       String?                     @db.Char(6)
+  modelo_maquina      String?                     @db.Char(50)
+  estado_maquina      usuarios_estado_usuario     @default(A)
+  precio_hora         Float                       @db.Float
+  imagenes            imagenes[]
+  usuarios            usuarios                    @relation(fields: [id_usuario], references: [id_usuario], onUpdate: Restrict, map: "FK_MAQUINARI_IDUSUARIO")
   reservas            reservas[]
 
   @@index([id_usuario], map: "FK_MAQUINARI_IDUSUARIO")
@@ -74,9 +76,10 @@ model usuarios {
   apellido_usuario          String                  @db.Char(50)
   tipo_documento            usuarios_tipo_documento
   documento_usuario         String                  @db.Char(25) @unique
-  numero_celu_usuario       String
+  numero_celu_usuario       String     
   correo_usuario            String                  @db.Char(60) @unique
   tipo_usuario              usuarios_tipo_usuario
+  imagen                    String                  
   estado_usuario            usuarios_estado_usuario @default(A)
   maquinarias               maquinarias[]
   reservas                  reservas[]
@@ -85,6 +88,15 @@ model usuarios {
   @@unique([id_usuario])
   @@id([id_usuario, credenciales_id_crdencial])
   @@index([credenciales_id_crdencial], map: "fk_usuarios_credenciales1_idx")
+}
+
+model imagenes {
+  id_imagen       Int            @id @default(autoincrement())
+  id_maquinaria   Int
+  path            String
+  maquinarias     maquinarias    @relation(fields: [id_maquinaria], references: [id_maquinaria], onUpdate: Restrict, map: "FK_IMAGENES_IDMAQUINARIA")
+
+  @@index([id_maquinaria], map: "FK_IMAGENES_IDMAQUINARIA")
 }
 
 enum usuarios_tipo_documento {

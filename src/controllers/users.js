@@ -31,6 +31,7 @@ const createUsers = async (req, res)=>{
                         numero_celu_usuario: body.numero_celu_usuario,
                         correo_usuario: body.correo_usuario,
                         tipo_usuario: body.tipo_usuario,
+                        imagen : body.path
                     },
                 });
                 res.status(200).json({ mensaje: "usuario creado" })
@@ -93,7 +94,8 @@ const getUsers = async (req, res)=>{
             numero_celu_usuario: usuarios.numero_celu_usuario,
             correo_usuario: usuarios.correo_usuario,
             tipo_usuario: usuarios.tipo_usuario,
-            estado_usuario: usuarios.estado_usuario
+            estado_usuario: usuarios.estado_usuario,
+            path : usuarios.imagen
           /*...usuarios,
           nombre_usuario: usuarios.credenciales.nombre_usuario*/
         };

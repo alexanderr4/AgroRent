@@ -34,11 +34,11 @@ const login = async (req, res) =>{
        
         const checkPassword = await compare(body.contrasena_usuario, credencial.contrasena_usuario);
         if(checkPassword && user.estado_usuario === 'A'){  
-            /*const accesToken = jwt.sign({tipo_usuario:user.tipo_usuario}, process.env.ACCES_TOKEN,{
+            const accesToken = jwt.sign({tipo_usuario:user.tipo_usuario}, process.env.ACCES_TOKEN,{
                 expiresIn:'8m'
             });
-            res.status(200).json(accesToken);*/
-            res.status(200).json({tipo_usuario: user.tipo_usuario});
+            res.status(200).json(accesToken);
+            //res.status(200).json({tipo_usuario: user.tipo_usuario});
         }else if(credencial){
             throw new Error("P2002")
         }
@@ -46,9 +46,10 @@ const login = async (req, res) =>{
         console.error(error);
         // Si el error se debe a que se violó una restricción única, responder con un mensaje específico
         if (error.message === "P2002") {
-            res.status(404).json({ mensaje: "Contrasena o Usuario invalido" });
-            if (error.meta.target.includes('nombre_usuario')) {
+            if (!error instanceof TypeError && error.meta.target.includes('nombre_usuario')) {
                 res.status(404).json({ mensaje: 'ya hay alaguien con ese documento ' }); 
+           }else{
+                res.status(404).json({ mensaje: "Contrasena o Usuario invalido" });
            }
         } else if(error instanceof TypeError){
             res.status(404).json({ mensaje: "Contrasena o Usuario invalido" });
