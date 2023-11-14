@@ -29,16 +29,22 @@ const login = async (req, res) =>{
         const user =  await prisma.usuarios.findFirst({
             where:{
                 credenciales_id_crdencial: credencial.id_crdencial,
-            },
+            }, include:{
+                credenciales:{
+                    select: {
+                        nombre_usuario: true // El nombre de usuario de la tabla "credenciales"
+                    }
+                }
+            }
         });
        
         const checkPassword = await compare(body.contrasena_usuario, credencial.contrasena_usuario);
-        if(checkPassword && user.estado_usuario === 'A'){  
+        if(checkPassword && user.estado_usuario == 'A'){  
             /*const accesToken = jwt.sign({tipo_usuario:user.tipo_usuario}, process.env.ACCES_TOKEN,{
                 expiresIn:'8m'
             });
             res.status(200).json(accesToken);*/
-            res.status(200).json({tipo_usuario: user.tipo_usuario});
+            res.status(200).json(mapUsersF(user));
         }else if(credencial){
             throw new Error("P2002")
         }
@@ -119,7 +125,7 @@ const recoverPassword = async(req, res) =>{
     }
 }
 
-var trasporter = nodemailer .createTransport({
+var trasporter = nodemailer.createTransport({
     service : 'gmail',
     auth :{
         user : process.env.EMAIL,
@@ -137,7 +143,24 @@ function generatecorre(){
     }
     console.log(password)
     return password;
-  };
+};
+
+function mapUsersF(users){
+    const user = {
+        "nombre_user": users.credenciales.nombre_usuario,
+        "id_usuario": users.id_usuario,
+        "nombre_usuario": users.nombre_usuario,
+        "apellido_usuario": users.apellido_usuario,
+        "tipo_documento": users.tipo_documento,
+        "documento_usuario": users.documento_usuario,
+        "numero_celu_usuario": users.numero_celu_usuario,
+        "correo_usuario": users.correo_usuario,
+        "tipo_usuario": users.tipo_usuario,
+        "imagen": users.imagen
+    }
+    return user
+}
+
   
   // Uso de la función para generar una contraseña de 12 caracteres
   /*const randomPassword = generateRandomPassword(12);

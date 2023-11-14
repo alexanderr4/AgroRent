@@ -175,7 +175,7 @@ async function generatecorre(body){
 function mapUsersF(users){
     const mapUsers = users.map((usuarios) => {
         return {
-            nombre_user: usuarios.credenciales.nombre_usuario,
+            nombre_user : usuarios.credenciales.nombre_usuario,
             nombre_usuario : usuarios.nombre_usuario,
             apellido_usuario: usuarios.apellido_usuario,
             tipo_documento: usuarios.tipo_documento,
