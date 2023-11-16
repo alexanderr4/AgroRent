@@ -38,6 +38,21 @@ const date = async(req, res)=>{
     res.status(200).json(mapReserve)
 }
 
+
+const filterIdReserve = async (req, res) => {
+    let body = req.query.id
+    try{
+        const reserves = await prisma.reservas.findMany({
+            where:{
+                id_maquinaria:parseInt(body)
+            }
+        })
+        res.status(200).json(reserves)
+    }catch(error){
+        console.log(error)
+    }
+}
+
 function validateDate(mapReserve, body){
     console.log(mapReserve.length);
     var rango1ContenidoEnRango2 = true;
@@ -74,4 +89,4 @@ function validateDate(mapReserve, body){
     console.log(hola)
 }
 
-module.exports={createReserve,date};
+module.exports={createReserve, date, filterIdReserve};
