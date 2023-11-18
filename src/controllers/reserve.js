@@ -1,9 +1,13 @@
 const { PrismaClient } = require('@prisma/client');
 const { json } = require('express');
 const prisma = new PrismaClient();
+const moment = require('moment');
 
 const createReserve = async (req, res) =>{
     body = req.body
+    body.fecha_hra_inicio = moment.utc(body.facha_hora_fin, "YYYY-MM-DDTHH:mm").toISOString();
+    body.facha_hora_fin = moment.utc(body.facha_hora_fin, "YYYY-MM-DDTHH:mm").toISOString();
+    console.log(body)
     bodyReserves = {
         fecha_hra_inicio : body.fecha_hra_inicio,
         facha_hora_fin : body.facha_hora_fin
@@ -58,15 +62,31 @@ const date = async(req, res)=>{
 const filterIdReserve = async (req, res) => {
     let body = req.query.id
     try{
-        const reserves = await prisma.reservas.findMany({
+        let reserves = await prisma.reservas.findMany({
             where:{
                 id_maquinaria:parseInt(body)
             }
         })
-        res.status(200).json(reserves)
+        
+        res.status(200).json(mapReservesT(reserves))
     }catch(error){
         console.log(error)
     }
+}
+
+
+function mapReservesT(reserves){
+    const mapReserves = reserves.map((reservas) => {
+        return {
+        id_reserva: reservas.id_reserva,
+        id_usuario: reservas.id_usuario,
+        id_maquinaria: reservas.id_maquinaria,
+        fecha_hra_inicio : moment.utc(reservas.fecha_hra_inicio).format("YYYY-MM-DDTHH:mm"),
+        facha_hora_fin : moment.utc(reservas.facha_hora_fin).format("YYYY-MM-DDTHH:mm"),
+        validacion_reserva : reservas.validacion_reserva
+        }
+    });
+    return mapReserves;
 }
 
 function validateDate(mapReserve, body){
@@ -108,6 +128,15 @@ function validateDate(mapReserve, body){
     //result = count == mapReserve.length? true : false
     console.log(result);
     return result;
+}
+
+function convertirFechaFormato1aFormato2(fechaStr) {
+    return fechaStr.replace(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}):\d{2}\.\d{3}Z$/, '$1T$2');
+}
+
+// Convertir de "2023-11-15T15:19" a "2024-05-02T16:05:00.000Z"
+function convertirFechaFormato2aFormato1(fechaStr) {
+    return fechaStr.replace(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})$/, '$1:00.000Z');
 }
 
 module.exports={createReserve, filterIdReserve};
