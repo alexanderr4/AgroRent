@@ -17,7 +17,6 @@ const createReserve = async (req, res) =>{
             }
         });
         if(validateDate(mapReserves, bodyReserves)){
-            console.log("hola buenas")
             const create = await prisma.reservas.create({
                 data:body
             });
