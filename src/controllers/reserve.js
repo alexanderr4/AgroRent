@@ -4,20 +4,37 @@ const prisma = new PrismaClient();
 
 const createReserve = async (req, res) =>{
     body = req.body
+    bodyReserves = {
+        fecha_hra_inicio : body.fecha_hra_inicio,
+        facha_hora_fin : body.facha_hora_fin
+    }
     try{
-        const create = await prisma.reservas.create({
-            data:body
+        const getReserves = await prisma.reservas.findMany();
+        const mapReserves = getReserves.map((reservas) => {
+            return {
+                fecha_hra_inicio : reservas.fecha_hra_inicio,
+                facha_hora_fin : reservas.facha_hora_fin
+            }
         });
-        res.status(200).json({mensaje:"reserva creada"})
+        if(validateDate(mapReserves, bodyReserves)){
+            console.log("hola buenas")
+            const create = await prisma.reservas.create({
+                data:body
+            });
+            res.status(200).json({mensaje:"reserva creada"})
+        }else{
+            res.status(404).json({mensaje:"fecha no disponible"})
+        }
     }catch(error){
-        console.error(error);
-        console.log(error.meta.field_name)
+        console.error(error.code);
         if(error.code == 'P2003'){
             if (error.meta.field_name =='id_usuario' ) {
                 res.status(404).json({ mensaje: 'El usuario no se encontro' });
             }else if(error.meta.field_name == 'id_maquinaria'){
                 res.status(404).json({ mensaje: 'La maquina no se encontro' });
             }
+        }else if(error.code === undefined){
+            res.status(404).json({ mensaje: 'Error al validar la fecha' });
         }else{
             res.status(500).json({ mensaje: 'Error al crear la reserva' });
         }
@@ -54,39 +71,44 @@ const filterIdReserve = async (req, res) => {
 }
 
 function validateDate(mapReserve, body){
-    console.log(mapReserve.length);
     var rango1ContenidoEnRango2 = true;
     var rango2ContenidoEnRango1 = true;
+    var limiteInicioRango2EnRango1 = true;
+    var limiteFinRango2EnRango1 = true;
+    var fechaEnRango1 = true;
+    var fechaEnRango2 = true;
+    var result = true;
+
     var count = 0;
-    while(rango1ContenidoEnRango2 && rango2ContenidoEnRango1){
        // Definir los rangos
-        const rango1 = {
+    var rango1 = null;
+    const rango2 = {
+        inicio: new Date(body.fecha_hra_inicio),
+        fin: new Date(body.facha_hora_fin)
+    };
+    while(result && count < mapReserve.length){
+        rango1 = {  
             inicio: new Date(mapReserve[count].fecha_hra_inicio),
             fin: new Date(mapReserve[count].facha_hora_fin)
         };
-        const rango2 = {
-            inicio: new Date(body.fecha_hra_inicio),
-            fin: new Date(body.facha_hora_fin)
-        };
-        
         rango1ContenidoEnRango2 = rango1.inicio >= rango2.inicio && rango1.fin <= rango2.fin;
         rango2ContenidoEnRango1 = rango2.inicio >= rango1.inicio && rango2.fin <= rango1.fin;
-        const limiteInicioRango2EnRango1 = rango2.inicio >= rango1.inicio && rango2.inicio <= rango1.fin;
-        const limiteFinRango2EnRango1 = rango2.fin >= rango1.inicio && rango2.fin <= rango1.fin;
+        limiteInicioRango2EnRango1 = rango2.inicio >= rango1.inicio && rango2.inicio <= rango1.fin;
+        limiteFinRango2EnRango1 = rango2.fin >= rango1.inicio && rango2.fin <= rango1.fin;
 
-        // Verificar si alguna fecha está contenida en el otro rango
-        const fechaEnRango1 = rango2.inicio >= rango1.inicio && rango2.inicio <= rango1.fin;
-        const fechaEnRango2 = rango1.inicio >= rango2.inicio && rango1.inicio <= rango2.fin;
-        console.log(rango1ContenidoEnRango2, "  " , rango2ContenidoEnRango1, " ",limiteInicioRango2EnRango1,  " ", limiteFinRango2EnRango1,
-        "  ", fechaEnRango1, "  ", fechaEnRango2)
-        
-        // Imprimir los resultados
-        console.log('¿Rango1 está contenido en Rango2?', rango1ContenidoEnRango2);
-        console.log('¿Rango2 está contenido en Rango1?', rango2ContenidoEnRango1);
-        
+            // Verificar si alguna fecha está contenida en el otro rango
+        fechaEnRango1 = rango2.inicio >= rango1.inicio && rango2.inicio <= rango1.fin;
+        fechaEnRango2 = rango1.inicio >= rango2.inicio && rango1.inicio <= rango2.fin;
+            
+            
+            // Imprimir los resultados
+        count += 1;
+        result = !rango1ContenidoEnRango2 && !rango2ContenidoEnRango1 && !limiteInicioRango2EnRango1 && !limiteFinRango2EnRango1 && !fechaEnRango1 && !fechaEnRango2;
     }
-    const hola =rango1ContenidoEnRango2 && rango2ContenidoEnRango1? 'fecha acepatada' : 'fecha rechazada';
-    console.log(hola)
+    
+    //result = count == mapReserve.length? true : false
+    console.log(result);
+    return result;
 }
 
-module.exports={createReserve, date, filterIdReserve};
+module.exports={createReserve, filterIdReserve};
