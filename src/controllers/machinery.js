@@ -58,15 +58,15 @@ const filterCategory = async (req, res) =>{
         const category = await prisma.maquinarias.findMany({
             where: body
         });
-        const paths = await prisma.imagenes.findMany();
+        const paths = await prisma.imagenes.findMany()
         const mapMachinery = mapMachineryT(category, paths);
         res.status(200).json(mapMachinery);
     }catch(error){
         console.error(error)
         if(error.message.includes("Argument `id_maquinaria` is missing.")){
-            res.status(404).json({mensanje:"El valor ingresado es incorrecto"})
+            res.status(404).json({mensaje:"El valor ingresado es incorrecto"})
         }else{
-            res.status(500).json({mensanje : "error al mostar las maquinaria"});
+            res.status(500).json({mensaje : "error al mostar las maquinaria"});
         }
     }
 }
@@ -85,6 +85,25 @@ async function image(body, machinery, res){
     }catch(error){
         console.error(error)
         res.status(500).json({mensaje: "error al agregar la maquinaria"})
+    }
+}
+
+const filterUser = async (req, res) =>{
+    let body = req.query;
+    body = body = { id_usuario : parseInt(body.id)}
+    try {
+        const getMachineryUser = await prisma.maquinarias.findMany({
+            where: body
+        });
+        const picture = await prisma.imagenes.findMany();
+        res.status(200).json(mapMachineryT(getMachineryUser, picture));
+    } catch (error) {
+        console.error(error);
+        console.log(error.code)
+        if(error.code == undefined){
+            res.status(404).json({mensaje:"error al traer maquinaria parametro de entrada no valido"});
+        }
+        res.status(500).json({mensaje:"error al obtener las maquinarias"});
     }
 }
 
@@ -118,4 +137,4 @@ function getPaths(images, id_maquinaria){
 
 
 
-module.exports={createMachinery, getMachinery, filterCategory};
+module.exports={createMachinery, getMachinery, filterCategory, filterUser};
