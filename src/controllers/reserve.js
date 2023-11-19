@@ -147,8 +147,10 @@ const changeStatusMachinery = async (req, res) => {
         }
     } catch (error) {
         console.error(error)
-        if(error.code == undefined || error.code == 'P2025'){
+        if(error.code == 'P2025'){
             res.status(404).json({mensaje:"no se ha encontrado la reserva"});
+        }else if(error.code == undefined){
+            res.status(404).json({mensaje:"parametro de entrada invalido"});
         }else{
             res.status(500).json({mensaje:"no se ha podio cambiar el estado de la reserva"});
         }
