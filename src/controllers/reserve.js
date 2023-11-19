@@ -100,9 +100,61 @@ const filterIdReserveUser = async (req, res) => {
     }
 }
 
+const filterRequestedMachinery = async (req, res) =>{
+    let body = req.query.id;
+    body = parseInt(body);
+    try {
+        const getMachineryRequeste = await prisma.maquinarias.findMany({
+            where:{
+                id_usuario:body
+            }, select: {
+                id_maquinaria: true,
+            }
+        });
+        const idsMaquinarias = getMachineryRequeste.map(maquinarias => maquinarias.id_maquinaria);
+        console.log(getMachineryRequeste)
+        const getReservesUser = await prisma.reservas.findMany({
+            where:{
+                id_maquinaria:{ 
+                    in:idsMaquinarias
+                }, 
+                validacion_reserva:"P"
+            }
+        });
+        console.log(getReservesUser)
+        res.status(200).json(getReservesUser);
+    }catch (error) {
+        console.error(error);
+        if(error.code == undefined){
+            res.status(404).json({mensaje:"error al traer la reservas parametro de entrada no valido"});
+        }else{
+            res.status(500).json({mensaje:"error al obtener las reservas"});
+        }
+    }
+}
 
+const changeStatusMachinery = async (req, res) => {
+    let body = req.query
+    try {
+        const changeStatus = await prisma.reservas.update({
+            where:{id_reserva: parseInt(body.id)},
+            data:{validacion_reserva: body.estado.toUpperCase()}
+        })
+        if(body.estado.toUpperCase() == 'A'){
+            res.status(200).json({mensaje:"la reserva ha sido aceptada exitosamente"});
+        }else{
+            res.status(200).json({mensaje:"la reserva ha sido rechazada exitosamente"});
+        }
+    } catch (error) {
+        console.error(error)
+        if(error.code == undefined || error.code == 'P2025'){
+            res.status(404).json({mensaje:"no se ha encontrado la reserva"});
+        }else{
+            res.status(500).json({mensaje:"no se ha podio cambiar el estado de la reserva"});
+        }
 
-
+    }
+}
 
 function mapReservesT(reserves){
     const mapReserves = reserves.map((reservas) => {
@@ -159,4 +211,4 @@ function validateDate(mapReserve, body){
     return result;
 }
 
-module.exports={createReserve, filterIdReserve, filterIdReserveUser};
+module.exports={createReserve, filterIdReserve, filterIdReserveUser, filterRequestedMachinery, changeStatusMachinery};
