@@ -194,7 +194,3 @@ function mapUsersF(users){
 
 
 module.exports={getUsers, createUsers, pacthUser, updateStatus, filterIdUser};
-
-
-
-
