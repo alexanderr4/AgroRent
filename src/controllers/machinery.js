@@ -137,4 +137,4 @@ function getPaths(images, id_maquinaria){
 
 
 
-module.exports={createMachinery, getMachinery, filterCategory, filterUser};
+module.exports={createMachinery, getMachinery, filterCategory, filterUser, getPaths};

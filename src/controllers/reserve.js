@@ -2,6 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const { json } = require('express');
 const prisma = new PrismaClient();
 const moment = require('moment');
+const {getPaths} = require('./machinery.js');
 
 const createReserve = async (req, res) =>{
     body = req.body
@@ -87,9 +88,24 @@ const filterIdReserveUser = async (req, res) => {
         let reserves = await prisma.reservas.findMany({
             where:{
                 id_usuario:parseInt(body)
+            },include: {
+                maquinarias: {
+                    select: {
+                        nombre_maquina: true // El nombre de usuario de la tabla "credenciales"
+                    }
+                }
             }
-        })       
-        res.status(200).json(mapReservesT(reserves))
+        });
+        const idsReserves = reserves.map(reservas => reservas.id_maquinaria);
+        const images = await prisma.imagenes.findMany({
+            where:{
+                id_maquinaria:{ 
+                    in:idsReserves
+                }
+            }
+        });
+        console.log(idsReserves);
+        res.status(200).json(mapIdReserveUser(reserves, images))
     }catch (error) {
         console.error(error);
         if(error.code == undefined){
@@ -109,20 +125,32 @@ const filterRequestedMachinery = async (req, res) =>{
                 id_usuario:body
             }, select: {
                 id_maquinaria: true,
+                nombre_maquina : true
             }
         });
         const idsMaquinarias = getMachineryRequeste.map(maquinarias => maquinarias.id_maquinaria);
-        console.log(getMachineryRequeste)
         const getReservesUser = await prisma.reservas.findMany({
             where:{
                 id_maquinaria:{ 
                     in:idsMaquinarias
                 }, 
                 validacion_reserva:"P"
+            },include:{
+                maquinarias:{
+                    select:{
+                        nombre_maquina: true
+                    }
+                }
             }
         });
-        console.log(getReservesUser)
-        res.status(200).json(getReservesUser);
+        const images = await prisma.imagenes.findMany({
+            where:{
+                id_maquinaria:{ 
+                    in:idsMaquinarias
+                }
+            }
+        });
+        res.status(200).json(mapIdReserveUser(getReservesUser, images));
     }catch (error) {
         console.error(error);
         if(error.code == undefined){
@@ -156,6 +184,24 @@ const changeStatusMachinery = async (req, res) => {
         }
 
     }
+}
+
+function mapIdReserveUser(reserves, imagenes){
+    const mapReserves = reserves.map((reservas) => {
+        return {
+        id_reserva: reservas.id_reserva,
+        id_usuario: reservas.id_usuario,
+        id_maquinaria: reservas.id_maquinaria,
+        fecha_hra_inicio : moment.utc(reservas.fecha_hra_inicio).format("YYYY-MM-DDTHH:mm"),
+        facha_hora_fin : moment.utc(reservas.facha_hora_fin).format("YYYY-MM-DDTHH:mm"),
+        validacion_reserva : reservas.validacion_reserva,
+        nombre_maquina : reservas.maquinarias.nombre_maquina,
+        path : getPaths(imagenes, reservas.id_maquinaria)
+        //imagen : getPaths(images, id_maquinaria)
+    
+        }
+    });
+    return mapReserves;
 }
 
 function mapReservesT(reserves){
