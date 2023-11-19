@@ -13,7 +13,9 @@ const createReserve = async (req, res) =>{
         facha_hora_fin : body.facha_hora_fin
     }
     try{
-        const getReserves = await prisma.reservas.findMany();
+        const getReserves = await prisma.reservas.findMany({
+            where : {id_maquinaria : body.id_maquinaria}
+        });
         const mapReserves = getReserves.map((reservas) => {
             return {
                 fecha_hra_inicio : reservas.fecha_hra_inicio,
@@ -69,10 +71,37 @@ const filterIdReserve = async (req, res) => {
         })
         
         res.status(200).json(mapReservesT(reserves))
-    }catch(error){
-        console.log(error)
+    } catch (error) {
+        console.error(error);
+        if(error.code == undefined){
+            res.status(404).json({mensaje:"error al traer la reservas parametro de entrada no valido"});
+        }else{
+            res.status(500).json({mensaje:"error al obtener las reservas"});
+        }
     }
 }
+
+const filterIdReserveUser = async (req, res) => {
+    let body = req.query.id
+    try{
+        let reserves = await prisma.reservas.findMany({
+            where:{
+                id_usuario:parseInt(body)
+            }
+        })       
+        res.status(200).json(mapReservesT(reserves))
+    }catch (error) {
+        console.error(error);
+        if(error.code == undefined){
+            res.status(404).json({mensaje:"error al traer la reservas parametro de entrada no valido"});
+        }else{
+            res.status(500).json({mensaje:"error al obtener las reservas"});
+        }
+    }
+}
+
+
+
 
 
 function mapReservesT(reserves){
@@ -130,4 +159,4 @@ function validateDate(mapReserve, body){
     return result;
 }
 
-module.exports={createReserve, filterIdReserve};
+module.exports={createReserve, filterIdReserve, filterIdReserveUser};

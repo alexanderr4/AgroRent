@@ -100,7 +100,7 @@ const filterUser = async (req, res) =>{
     } catch (error) {
         console.error(error);
         if(error.code == undefined){
-            res.status(404).json({mensaje:"error al traer maquinaria parametro de entrada no valido"});
+            res.status(404).json({mensaje:"error al traer las maquinaria parametro de entrada no valido"});
         }else{
             res.status(500).json({mensaje:"error al obtener las maquinarias"});
         }
