@@ -25,13 +25,13 @@ const createMachinery = async (req, res) =>{
         if(body.path.length > 0){
             image(body.path, create.id_maquinaria, res)
         }
-        res.status(200).json({mesanje:"maquinaria creada"})
+        res.status(200).json({ mensanje:"maquinaria creada" })
     }catch(error){
         console.log(error.code)
         if(error instanceof TypeError){
-            res.status(404).json({mesanje:"usuario no encontrado"})
+            res.status(404).json({ mensanje:"usuario no encontrado" })
         }else{
-            res.status(500).json({mesanje:"error al agregar la maquinaria"})
+            res.status(500).json({ mensanje:"error al agregar la maquinaria" })
         }
     }
 }
@@ -44,7 +44,7 @@ const getMachinery = async (req, res)=>{
         res.status(200).json(mapMachinery);
     } catch (error) {
         console.error(error)
-        res.status(500).json({mesanje : "error al mostar las maquinaria"}); 
+        res.status(500).json({mensanje : "error al mostar las maquinaria"}); 
     }
 }
 
@@ -63,9 +63,9 @@ const filterCategory = async (req, res) =>{
     }catch(error){
         console.error(error)
         if(error.message.includes("Argument `id_maquinaria` is missing.")){
-            res.status(404).json({mesanje:"El valor ingresado es incorrecto"})
+            res.status(404).json({mensanje:"El valor ingresado es incorrecto"})
         }else{
-            res.status(500).json({mesanje : "error al mostar las maquinaria"});
+            res.status(500).json({mensanje : "error al mostar las maquinaria"});
         }
     }
 }

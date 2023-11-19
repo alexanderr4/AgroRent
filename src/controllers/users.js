@@ -108,6 +108,7 @@ const pacthUser = async (req, res)=>{
             }     
         });
         res.json({ msg: "estudiante actualizado", upadateUser })
+        console.log( res.json({ msg: "estudiante actualizado", upadateUser }))
     }catch(error){
         console.error(error);
         if (error.code === "P2002") {
