@@ -27,6 +27,7 @@ const createMachinery = async (req, res) =>{
         }
         res.status(200).json({ mensanje:"maquinaria creada" })
     }catch(error){
+        console.error(error)
         console.log(error.code)
         if(error instanceof TypeError){
             res.status(404).json({ mensanje:"usuario no encontrado" })
@@ -82,6 +83,7 @@ async function image(body, machinery, res){
             );
         }
     }catch(error){
+        console.error(error)
         res.status(500).json({mensaje: "error al agregar la maquinaria"})
     }
 }

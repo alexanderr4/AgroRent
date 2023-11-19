@@ -5,7 +5,7 @@ const moment = require('moment');
 
 const createReserve = async (req, res) =>{
     body = req.body
-    body.fecha_hra_inicio = moment.utc(body.facha_hora_fin, "YYYY-MM-DDTHH:mm").toISOString();
+    body.fecha_hra_inicio = moment.utc(body.fecha_hra_inicio, "YYYY-MM-DDTHH:mm").toISOString();
     body.facha_hora_fin = moment.utc(body.facha_hora_fin, "YYYY-MM-DDTHH:mm").toISOString();
     console.log(body)
     bodyReserves = {
@@ -128,15 +128,6 @@ function validateDate(mapReserve, body){
     //result = count == mapReserve.length? true : false
     console.log(result);
     return result;
-}
-
-function convertirFechaFormato1aFormato2(fechaStr) {
-    return fechaStr.replace(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}):\d{2}\.\d{3}Z$/, '$1T$2');
-}
-
-// Convertir de "2023-11-15T15:19" a "2024-05-02T16:05:00.000Z"
-function convertirFechaFormato2aFormato1(fechaStr) {
-    return fechaStr.replace(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})$/, '$1:00.000Z');
 }
 
 module.exports={createReserve, filterIdReserve};

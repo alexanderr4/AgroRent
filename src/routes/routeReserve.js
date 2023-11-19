@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const users= require('../controllers/reserve.js');
+const reserve= require('../controllers/reserve.js');
 
-router.post('/createReserve', users.createReserve)
-        .get("/getReserve", users.filterIdReserve)
+router.post('/createReserve', reserve.createReserve)
+        .get("/getReserve", reserve.filterIdReserve)
 
 
 module.exports = router; 
