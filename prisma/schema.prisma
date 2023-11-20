@@ -8,12 +8,13 @@ datasource db {
 }
 
 model alquiler_maquinas {
-  id_alquiler          Int      @id @default(autoincrement())
+  id_alquiler          Int                              @id @default(autoincrement())
   id_reserva           Int
-  costo_hora_alquiler  Float    @db.Float
-  fecha_hora_entrega   DateTime @db.DateTime(0)
-  costo_total_alquiler Float    @db.Float
-  reservas             reservas @relation(fields: [id_reserva], references: [id_reserva], onUpdate: Restrict, map: "FK_ALQUILER_IDERESERVA")
+  costo_hora_alquiler  Float                            @db.Float
+  fecha_hora_entrega   DateTime                         @db.DateTime(0)
+  costo_total_alquiler Float                            @db.Float
+  estado               alquiler_validacion_estado       @default(P)
+  reservas             reservas                         @relation(fields: [id_reserva], references: [id_reserva], onUpdate: Restrict, map: "FK_ALQUILER_IDERESERVA")
   multas               multas[]
 
   @@index([id_reserva], map: "FK_ALQUILER_IDERESERVA")
@@ -29,8 +30,8 @@ model credenciales {
 model maquinarias {
   id_maquinaria       Int                         @id @default(autoincrement())
   id_usuario          Int
-  nombre_maquina      String                      @db.Char(20)
-  descripcion_maquina String                      @db.Char(100)
+  nombre_maquina      String                      @db.Char(40)
+  descripcion_maquina String
   categoria           String
   placa_maquina       String?                     @db.Char(6)
   modelo_maquina      String?                     @db.Char(50)
@@ -79,7 +80,7 @@ model usuarios {
   numero_celu_usuario       String     
   correo_usuario            String                  @db.Char(60) @unique
   tipo_usuario              usuarios_tipo_usuario
-  imagen                    String                  
+  imagen                    String?                  
   estado_usuario            usuarios_estado_usuario @default(A)
   maquinarias               maquinarias[]
   reservas                  reservas[]
@@ -119,4 +120,10 @@ enum usuarios_tipo_usuario {
 enum usuarios_estado_usuario {
   A
   I
+}
+
+enum alquiler_validacion_estado {
+  I
+  F
+  P
 }

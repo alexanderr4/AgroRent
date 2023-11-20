@@ -17,3 +17,8 @@ npm install dotenv
 https://youtu.be/3UftyPnqp1w
 
 npm install moment //formato fecha
+
+npm install luxon // hora actual colombia
+
+
+ npm install moment-timezone // fecha
