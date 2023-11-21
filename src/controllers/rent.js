@@ -75,4 +75,14 @@ const getRentRequestedUser = async (req, res) =>{
     }
 }
 
-module.exports = {rent, getRentRequestedUser, getRentdUser}
+const getAllRents = async (req, res) =>{
+    try {
+        const get  = await prisma.alquiler_maquinas.findMany();
+        res.status(200).json(get);
+    } catch (error) {
+        res.status(500).json({mensaje:"error al obtener las reservas"});
+    }
+   
+}
+
+module.exports = {rent, getRentRequestedUser, getRentdUser, getAllRents}

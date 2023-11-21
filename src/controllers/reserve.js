@@ -4,13 +4,14 @@ const prisma = new PrismaClient();
 const moment = require('moment');
 const {getPaths} = require('./machinery.js');
 const { DateTime } = require('luxon');
+const e = require('express');
 
 
 const createReserve = async (req, res) =>{
     body = req.body
     try{
-        if(getDate(body.fecha_hra_inicio, body.facha_hora_fin)){
-            console.log(getDate(body.fecha_hra_inicio, body.facha_hora_fin))
+        if(validateDateActual(body.fecha_hra_inicio, body.facha_hora_fin)){
+            console.log(validateDateActual(body.fecha_hra_inicio, body.facha_hora_fin))
             body.fecha_hra_inicio = moment.utc(body.fecha_hra_inicio, "YYYY-MM-DDTHH:mm").toISOString();
             body.facha_hora_fin = moment.utc(body.facha_hora_fin, "YYYY-MM-DDTHH:mm").toISOString();
             console.log(body)
@@ -194,7 +195,34 @@ const changeStatusMachinery = async (req, res) => {
     }
 }
 
-function getDate(startDate, endDate){
+const getAllReserves = async (req, res) =>{
+    try {
+        const getReserves = await prisma.reservas.findMany({
+            include:{
+                maquinarias:{
+                    select:{nombre_maquina:true,
+                        id_maquinaria : true
+                    }
+                }
+            }
+    
+        });
+        const mapReserves = getReserves.map(reservas => reservas.id_maquinaria);
+        const getimages = await prisma.imagenes.findMany({
+            where :{
+                id_maquinaria:{
+                    in:mapReserves
+                }
+            }
+        });
+        res.status(200).json(mapIdReserveUser(getReserves, getimages))
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({mensaje :" Error al obtener las reservas"})
+    }
+}
+
+function validateDateActual(startDate, endDate){
     // Obtén la fecha y hora actual en la zona horaria de Colombia
     var currentDateTime = DateTime.now().setZone('America/Bogota')
     const year = currentDateTime.year;
@@ -224,7 +252,6 @@ function mapIdReserveUser(reserves, imagenes){
         validacion_reserva : reservas.validacion_reserva,
         nombre_maquina : reservas.maquinarias.nombre_maquina,
         path : getPaths(imagenes, reservas.id_maquinaria)
-        //imagen : getPaths(images, id_maquinaria)
     
         }
     });
@@ -286,4 +313,4 @@ function validateDate(mapReserve, body){
     return result;
 }
 
-module.exports={createReserve, filterIdReserve, filterIdReserveUser, filterRequestedMachinery, changeStatusMachinery};
+module.exports={createReserve, filterIdReserve, filterIdReserveUser, filterRequestedMachinery, changeStatusMachinery, getAllReserves};

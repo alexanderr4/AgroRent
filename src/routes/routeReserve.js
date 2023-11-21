@@ -7,4 +7,5 @@ router.post('/createReserve', reserve.createReserve)
         .get('/filterIdReserveUser', reserve.filterIdReserveUser)
         .get('/filterRequested', reserve.filterRequestedMachinery)
         .put('/changeStatus', reserve.changeStatusMachinery)
+        .get('/getAllReserves', reserve.getAllReserves)
 module.exports = router; 
