@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 
 const login = async (req, res) =>{
     let body = req.body;
-    console.log(process.env.ACCES_TOKEN);
+    //console.log(process.env.ACCES_TOKEN);
     try{
         let credencial = await prisma.credenciales.findUnique({
             where:{
@@ -67,6 +67,7 @@ const login = async (req, res) =>{
 
 const recoverPassword = async(req, res) =>{
     let body = req.body;
+    
     try {
         let credencial = await prisma.credenciales.findUnique({
             where:{
@@ -113,12 +114,10 @@ const recoverPassword = async(req, res) =>{
                 contrasena_usuario: passwordHash
             }
         });
-        res.status(200).json({mensaje: 'Correo enviado'});
-    
+        res.status(200).json({mensaje: 'Revisa tu correo'});
     } catch (error) {
         if(error instanceof TypeError){
-            console.log('Usuario o correo invalidos')
-            res.status(404).json({mensaje:'Usuario o correo invalidos'})
+            res.status(404).json({mensaje:'Usuario o correo invalido'})
         }else{
             res.status(500).json({mensaje:'Error al recuperar contraseña'})
         }
